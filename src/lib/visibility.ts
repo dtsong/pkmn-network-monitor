@@ -22,10 +22,11 @@ export class VisibilityTracker {
     if (document.visibilityState === 'hidden') {
       this.hiddenAt = Date.now();
     } else if (document.visibilityState === 'visible' && this.hiddenAt) {
+      const now = Date.now();
       const gap: VisibilityGap = {
         hiddenAt: this.hiddenAt,
-        visibleAt: Date.now(),
-        durationMs: Date.now() - this.hiddenAt,
+        visibleAt: now,
+        durationMs: now - this.hiddenAt,
       };
       this.gaps.push(gap);
       this.hiddenAt = null;

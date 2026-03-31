@@ -131,6 +131,7 @@ export default function LoadTest({ config, onStop }: LoadTestScreenProps) {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      stoppedRef.current = true;
       workerRef.current?.postMessage({ type: 'STOP' });
       workerRef.current?.terminate();
     };
