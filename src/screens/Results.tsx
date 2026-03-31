@@ -13,6 +13,10 @@ import {
   generateRecommendations,
   generateLoadTestRecommendations,
 } from '../lib/recommendations';
+import {
+  generateXLSXReport,
+  generateCSV as generateCSVExport,
+} from '../lib/xlsx-export';
 
 interface ResultsScreenProps {
   config: SessionConfig;
@@ -218,6 +222,10 @@ function buildBenchmarkExport(
 
 function downloadFile(content: string, filename: string, mime: string): void {
   const blob = new Blob([content], { type: mime });
+  downloadBlob(blob, filename);
+}
+
+function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -348,19 +356,20 @@ export default function Results({
     );
   }
 
+  function handleExportXLSX(): void {
+    const blob = generateXLSXReport(
+      config,
+      readings,
+      events,
+      sessionScore,
+      recommendations,
+    );
+    downloadBlob(blob, `report-${config.id}.xlsx`);
+  }
+
   function handleExportCSV(): void {
-    // CSV fallback until XLSX is available
-    const header =
-      'Timestamp,Elapsed (min),Download (Mbps),Upload (Mbps),Latency (ms),Jitter (ms),Stability (%)';
-    const rows = readings.map(
-      (r) =>
-        `${new Date(r.timestamp).toISOString()},${round(r.elapsedMs / 60000)},${round(r.download)},${round(r.upload)},${round(r.latency)},${round(r.jitter)},${round(r.stability)}`,
-    );
-    downloadFile(
-      [header, ...rows].join('\n'),
-      `report-${config.id}.csv`,
-      'text/csv',
-    );
+    const blob = generateCSVExport(config, readings, events);
+    downloadBlob(blob, `report-${config.id}.csv`);
   }
 
   function handleContributeBenchmark(): void {
@@ -490,8 +499,14 @@ export default function Results({
           Export
         </h2>
         <button
-          onClick={handleExportCSV}
+          onClick={handleExportXLSX}
           className="w-full py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 font-semibold text-sm transition-colors"
+        >
+          Download Report (XLSX)
+        </button>
+        <button
+          onClick={handleExportCSV}
+          className="w-full py-3 rounded-lg bg-white/10 hover:bg-white/15 font-semibold text-sm transition-colors border border-white/10"
         >
           Download Report (CSV)
         </button>
