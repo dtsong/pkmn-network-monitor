@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS submissions (
   player_count INTEGER,
   isp TEXT,
   connection_type TEXT,
-  access_points TEXT,
+  access_points INTEGER,
   rssi_dbm REAL,
   wifi_band TEXT,
   same_channel_networks INTEGER,
@@ -29,3 +29,6 @@ CREATE TABLE IF NOT EXISTS submissions (
   disconnects INTEGER,
   full_data TEXT
 );
+
+CREATE INDEX IF NOT EXISTS idx_submissions_ip_date
+  ON submissions (ip_hash, submitted_at);
