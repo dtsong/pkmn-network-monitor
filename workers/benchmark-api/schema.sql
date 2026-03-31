@@ -1,0 +1,34 @@
+CREATE TABLE IF NOT EXISTS submissions (
+  id TEXT PRIMARY KEY,
+  submitted_at TEXT NOT NULL,
+  schema_version TEXT NOT NULL,
+  ip_hash TEXT,
+  session_mode TEXT,
+  venue TEXT,
+  region TEXT,
+  date TEXT,
+  duration_minutes INTEGER,
+  games TEXT,
+  devices TEXT,
+  player_count INTEGER,
+  isp TEXT,
+  connection_type TEXT,
+  access_points INTEGER,
+  rssi_dbm REAL,
+  wifi_band TEXT,
+  same_channel_networks INTEGER,
+  total_visible_networks INTEGER,
+  avg_download REAL,
+  min_download REAL,
+  avg_upload REAL,
+  avg_latency REAL,
+  max_latency REAL,
+  avg_jitter REAL,
+  stability_pct REAL,
+  lag_events INTEGER,
+  disconnects INTEGER,
+  full_data TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_submissions_ip_date
+  ON submissions (ip_hash, submitted_at);
