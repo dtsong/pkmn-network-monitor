@@ -45,8 +45,10 @@ interface WorkerConfig {
   targetUrl: string;
 }
 
+// Mirrors WorkerInbound from src/types/index.ts
+// Worker only reads config.mode; full SessionConfig passed through for fidelity
 type InboundMessage =
-  | { type: 'START_SESSION'; config: { mode: SessionMode; targetUrl: string }; targetUrl: string }
+  | { type: 'START_SESSION'; config: { mode: SessionMode; [key: string]: unknown }; targetUrl: string }
   | { type: 'TAKE_READING' }
   | { type: 'STOP' };
 
