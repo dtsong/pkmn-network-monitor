@@ -27,6 +27,7 @@ function round(value: number, decimals = 1): number {
 export function generateRecommendations(
   sessionScore: SessionScore,
   events: EventTag[],
+  readings: MeasurementReading[],
   playerCount: number,
   accessPoints: number | null,
   passiveScan: PassiveScan | null,
@@ -119,12 +120,19 @@ export function generateRecommendations(
   }
 
   // Lag correlates with speed drops
+  // Only flag when the correlated reading's download was below the session average
   const lagCorrelations = eventCorrelations.filter(
     (c) => c.eventType === 'lag_reported',
   );
   if (lagCorrelations.length > 0) {
+    const readingMap = new Map(readings.map((r) => [r.id, r]));
     const lagTimestamps = lagEvents
-      .filter((e) => lagCorrelations.some((c) => c.eventId === e.id))
+      .filter((e) => {
+        const corr = lagCorrelations.find((c) => c.eventId === e.id);
+        if (!corr) return false;
+        const reading = readingMap.get(corr.readingId);
+        return reading !== undefined && reading.download < metrics.avgDownload;
+      })
       .map((e) => {
         const mins = Math.round(e.elapsedMs / 60000);
         return `${mins}m`;
