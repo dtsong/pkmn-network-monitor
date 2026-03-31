@@ -10,6 +10,16 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
+        runtimeCaching: [
+          {
+            // Network-first for speed test endpoints
+            urlPattern: /\/(ping|down|up)$/,
+            handler: 'NetworkOnly',
+          },
+        ],
+      },
       manifest: {
         name: 'Pokemon Network Monitor',
         short_name: 'NetMonitor',
@@ -17,7 +27,14 @@ export default defineConfig({
         orientation: 'portrait',
         theme_color: '#1a1a2e',
         background_color: '#1a1a2e',
-        icons: [],
+        icons: [
+          {
+            src: '/favicon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any',
+          },
+        ],
       },
     }),
   ],
